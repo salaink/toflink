@@ -1,0 +1,768 @@
+:: tof connect
+(set:$tof_depth = 0.0)
+<script>
+class SensorSubscribeCmd extends Buttplug.ButtplugDeviceMessage {
+  static Name = "SensorSubscribeCmd"
+  constructor(DeviceIndex, SensorIndex, SensorType) {
+    super(DeviceIndex, Buttplug.DEFAULT_MESSAGE_ID);
+		this.SensorIndex = SensorIndex
+		this.SensorType = SensorType
+  }
+}
+
+const sorter = Window.BP.bpClient._connector._sorter;
+const old_pim = sorter.ParseIncomingMessages;
+sorter.ParseIncomingMessages = (msgs) => { 
+    for (const msg of msgs) {
+        if (msg.Type == Buttplug.SensorReading) {
+            $tof_depth = msg.Data[0] / 100;
+        }
+    }
+    return old_pim.apply(sorter, [msgs]);
+};
+const dev = Window.BP.devices["Generic Vibrator"];
+dev.sendExpectOk(new SensorSubscribeCmd(1, 0, "foo")).then(console.log);
+</script>
+
+:: buttplug config {"position":"350,8100","size":"100,100"}
+{
+<div class='options'>(color:"#e27087")[(css:"font-size:5vmin")[<span class='shadow'>Toy Interface Settings</span>]]</div>
+<span><a href='https://intiface.com/central/' target='_blank' rel='noopener noreferrer'>(color:"#85C1E9")[Intiface]</a> connection status: (live: 1s)[(if:$buttplug_connected)[Yes!](else:)[Not yet](stop:)](display:"buttplug connect button")</span>
+(live: 1s)[(if: $buttplug_selected_device_name is not "")[<div class='options'>(link:"Deselect current device")[(set:$buttplug_selected_device_name to "")]</div>]]<div class='options'>(display:"buttplug connected devices list")</div>(live: 1s)[(if: $buttplug_selected_device_name is not "")[<div class='options'>{<div>(link:"Don't Cum Game Interaction Settings")[(display:"click")(set:$next to "buttplug dont cum config")(display:"change screen")]</div>
+<div>(link:"Quick Time Game Interaction Settings")[(display:"click")(set:$next to "buttplug quicktime config")(display:"change screen")]</div>
+<div>(link:"Pleasure Bar Interaction Settings")[(display:"click")(set:$next to "buttplug pleasure meter config")(display:"change screen")]</div>
+<div>(link:"Connect depth sensor")[(display:"tof connect")]</div>}</div>]]
+<div class='options'>(link:"Back")[(display:"click")(set:$next to "view game settings")(display:"change screen")]</div>
+}
+
+<!-- MOD: BJ REPLACEMENT -->
+
+:: quicktime buttons {"position":"1225,14475","size":"100,100"}
+<!--
+(set:$tof_depth to 0)
+<script>
+// TODO: for testing without tof
+const interval = 2000;
+setInterval(() => {
+  const t = (new Date().getTime() % interval) / interval * 2;
+  $tof_depth = t > 1 ? 2 - t : t;
+  console.log($tof_depth);
+}, 100);
+</script>-->
+
+<div class='options'>{
+  [
+    (replace:?right_options)[(print:"
+")|enter>[(unless:$mobile_mode is "Real Time Minigames: Disabled")[(link:"Play minigame")[(replace:?right_options)[](if:$type is "bj")[(if:(datanames:$npc) contains "cockimg")[(replace:?right_options)[(print:"<img class='greyborder' src='" + (text:$npc's "cockimg") + "' width='100%' height=auto>")]]](set:$method to "minigame")
+(replace:?challenge_text)[(if:$type is "bj" or $type is "satisfy")[(if:(datanames:$quicktime_params) contains "target")[(set:$time_target to $quicktime_params's "target")](else:)[(set:$time_target to 20)](color:"#f9ced5")[(css:"font-size:4vmin")[<span class='shadow'>(if:$type is "satisfy")[Make this last at least $time_target seconds.](else:)[(either:"Make this last at least $time_target seconds.","Make this last at least $time_target seconds.","Go slow enough to make this last at least $time_target seconds.")](if:(random:1,6) is 1)[ (either:"It isn't a race...","Slow and steady wins the race.")]</span>]]](if:$type is "group handjob")[(if:(datanames:$quicktime_params) contains "target")[(set:$time_target to $quicktime_params's "target")](else:)[(set:$time_target to 20)](color:"#f9ced5")[(css:"font-size:4vmin")[<span class='shadow'>(either:"Make this handjob last at least $time_target seconds.","Stroke them for at least $time_target seconds.")</span>]]](if:$type is "masturbate")[(set:$time_target to 25)(color:"#f9ced5")[(css:"font-size:4vmin")[<span class='shadow'>(either:"Last $time_target seconds, and you'll cum harder.","Last at least $time_target seconds to cum harder.","Last at least $time_target seconds, and you'll cum harder.")(if:(random:1,6) is 1)[ (either:"No need to rush.","This is your time...","You're on your own clock...")]</span>]]](else-if:(datanames:$quicktime_params) contains "objective text")[(color:"#f9ced5")[(css:"font-size:4vmin")[<span class='shadow'>(print:$quicktime_params's "objective text")</span>]]]]
+(replace:?directions)[(unless:(a:"try to cum","recover","stripping") contains $type)[<mark>**Use your arrow keys (or WASD) in 3... (after:time + 1s)[2... (after:time + 1s)[1...]]**</mark>](else:)[<mark>**Use your arrow keys (or WASD), and watch for bonuses!**</mark>](if:$type is "stripping")[(print:"
+
+")
+<mark>💵 Press the **SPACEBAR** when you see money. 💵</mark>(print:"
+")
+<mark>😈 Hit **SHIFT** instead to (either:"SLUT IT UP","BE A HO","REALLY SHAKE IT","BE SUPER SLUTTY") and double that $$$! 😈</mark>](if:$type is "try to cum")[(print:"
+
+")
+<mark>Press **SPACEBAR** or **SHIFT** to gain extra pleasure when you see 💦 icons!(print:"
+")SPACEBAR: lower option(print:"
+")SHIFT: upper option</mark>](if:$type is "recover")[(print:"
+
+")
+<mark>Press **SPACEBAR** or **SHIFT** to gain extra stamina when you see ⚡ icons!(print:"
+")SPACEBAR: lower option(print:"
+")SHIFT: upper option</mark>]](unless:(a:"try to cum","recover","stripping") contains $type)[(live:3s)[(replace:?directions)[{(display:"quicktime next sequence")}](display:"quicktime timer")(stop:)]](else:)[(replace:?right_options)[|enter>[(link:"Begin")[(set:$minigame_played to "true")(replace:?directions)[{(display:"quicktime next sequence")}](display:"quicktime timer")]]]]]
+(if:$type is "bj" or $type is "blowjob")[(link:"Suck dildo")[(replace:?right_options)[](if:$type is "bj")[(if:(datanames:$npc) contains "cockimg")[(replace:?right_options)[(print:"<img class='greyborder' src='" + (text:$npc's "cockimg") + "' width='100%' height=auto>")]]](set:$method to "minigame")
+(replace:?challenge_text)[(if:$type is "bj" or $type is "satisfy")[(if:(datanames:$quicktime_params) contains "target")[(set:$time_target to $quicktime_params's "target")](else:)[(set:$time_target to 20)](color:"#f9ced5")[(css:"font-size:4vmin")[<span class='shadow'>(if:$type is "satisfy")[Make this last at least $time_target seconds.](else:)[(either:"Make this last at least $time_target seconds.","Make this last at least $time_target seconds.","Go slow enough to make this last at least $time_target seconds.")](if:(random:1,6) is 1)[ (either:"It isn't a race...","Slow and steady wins the race.")]</span>]]](if:$type is "group handjob")[(if:(datanames:$quicktime_params) contains "target")[(set:$time_target to $quicktime_params's "target")](else:)[(set:$time_target to 20)](color:"#f9ced5")[(css:"font-size:4vmin")[<span class='shadow'>(either:"Make this handjob last at least $time_target seconds.","Stroke them for at least $time_target seconds.")</span>]]](if:$type is "masturbate")[(set:$time_target to 25)(color:"#f9ced5")[(css:"font-size:4vmin")[<span class='shadow'>(either:"Last $time_target seconds, and you'll cum harder.","Last at least $time_target seconds to cum harder.","Last at least $time_target seconds, and you'll cum harder.")(if:(random:1,6) is 1)[ (either:"No need to rush.","This is your time...","You're on your own clock...")]</span>]]](else-if:(datanames:$quicktime_params) contains "objective text")[(color:"#f9ced5")[(css:"font-size:4vmin")[<span class='shadow'>(print:$quicktime_params's "objective text")</span>]]]]
+(replace:?directions)[(unless:(a:"try to cum","recover","stripping") contains $type)[<mark>**Suck on the dildo in 3... (after:time + 1s)[2... (after:time + 1s)[1...]]**</mark>](else:)[<mark>**Suck on the dildo, and watch for bonuses!**</mark>](if:$type is "stripping")[(print:"
+
+")
+<mark>💵 Press the **SPACEBAR** when you see money. 💵</mark>(print:"
+")
+<mark>😈 Hit **SHIFT** instead to (either:"SLUT IT UP","BE A HO","REALLY SHAKE IT","BE SUPER SLUTTY") and double that $$$! 😈</mark>](if:$type is "try to cum")[(print:"
+
+")
+<mark>Press **SPACEBAR** or **SHIFT** to gain extra pleasure when you see 💦 icons!(print:"
+")SPACEBAR: lower option(print:"
+")SHIFT: upper option</mark>](if:$type is "recover")[(print:"
+
+")
+<mark>Press **SPACEBAR** or **SHIFT** to gain extra stamina when you see ⚡ icons!(print:"
+")SPACEBAR: lower option(print:"
+")SHIFT: upper option</mark>]](unless:(a:"try to cum","recover","stripping") contains $type)[(live:3s)[(replace:?directions)[{(display:"quicktime next sequence tof bj")}](display:"quicktime timer")(stop:)]](else:)[(replace:?right_options)[|enter>[(link:"Begin")[(set:$minigame_played to "true")(replace:?directions)[{(display:"quicktime next sequence tof bj")}](display:"quicktime timer")]]]]]]]](print:"
+")(display:"quicktime skill check")(if:$minigame_skip is "Skippable Minigames: On")[
+(link:"Skip (win)")[(replace:?right_options)[](set:$next to $quicktime_params's "result passage")(set:$result to "pass")(display:"change screen")]
+(link:"Skip (lose)")[(replace:?right_options)[](set:$next to $quicktime_params's "result passage")(set:$result to "fail")(display:"change screen")]]]
+  ]<directions|
+}</div>
+
+:: quicktime next sequence tof bj {"position":"100,14600","size":"100,100"}
+{
+  (set:$correct_dir to $index of $quicktime_params's "sequence")
+  (set:$tof_depth_last to $tof_depth)
+  (live:200ms)[(if:$quicktime is "running")[(display:"tof update")]]
+  (set:$index to (cond:
+    it is $length, 1,
+    it + 1
+  ))
+}
+
+
+:: tof update {"position":"475,14600","size":"100,100"}
+{
+  (set:$movement to (abs:$tof_depth - $tof_depth_last))
+  (set:$tof_depth_last to $tof_depth)
+  (set:$quicktime_params's "points" to it + $movement * 5)
+  <!--(for: each _passage, ...$tagged's "quicktime_correct")[(display:_passage)]-->
+  (if:(datanames:$quicktime_params) contains "real time his pleasure")[
+    (if:($timer % 7 is 0) and ($last_gain_timer is not $timer))[
+      (set:$gain to 1)
+      (set:$last_gain_timer to $timer)
+      (if:$his_pleasure < $his_pleasure_threshold)[
+        (set:$his_pleasure to (min:$his_pleasure + $gain,$his_pleasure_threshold))
+        (display:"update his pleasure")
+      ]
+    ]
+  ]
+  (replace:?score_bar)[{
+    (set:$points_to_win to $quicktime_params's "points to win")
+    (set:$points to $quicktime_params's "points")
+    <script>GE.updateStats($points_to_win, $points);</script>
+  }]
+  (set:$font_size to "font-size:" + (cond:
+    $combo is 10, "4vmin",
+    "1." + (text:$combo) + "em"
+  ))
+  (replace:?score)[{
+    Movement: (print: $movement)
+  }]
+  (display:"quicktime check")
+}
+
+<!-- MOD: FACEFUCK REPLACEMENT -->
+
+:: TODO dont cum initialize {"position":"350,14225","size":"100,100"}
+{
+  (set:$dont_cum_update_points to (macro: num-type _points, [{
+    (set:$points to _points)
+    (out:)[{
+      <script>GE.updateStats(100,$points);</script>
+    }]
+}]))
+  (set:$dontcum to "active")
+  (set:$interrupting to "false")
+  (set:$minigame_played to "false")
+  (set:$timer to 1)
+  (set:$win_type to "You win!")
+  (set:$lose_type to "You lose...")
+  (set:$bonus_count to 0)
+  (set:$his_pleasure_count to 0)
+  (set:$bonus to "false")
+  (set:$bonus_area to "none")
+  (set:$bonus_timer to 0)
+  (set:$correct to 10)
+  (if:(datanames:$quicktime_params) contains "type")[
+    (set:$type to $quicktime_params's "type")
+    (if:$type is "oral" or $type is "transactional sex")[
+      (set:$lose_type to (either:"You can't control your moans","You moan loudly","You moan","You whimper","You squeal") + "...")
+    ]
+  ](else:)[
+    (set:$type to "none")
+  ]
+  (if:(datanames:$quicktime_params) contains "media")[
+    (set:$media to $quicktime_params's "media")
+  ](else:)[
+    (set:$media to "video")
+  ]
+  (if:$quicktime_difficulty is "Quicktime Difficulty: Hardcore")[
+    (if:$quicktime_params's "interrupts" > 0)[
+      (set:$quicktime_params's "interrupts" to $quicktime_params's "interrupts" * 3)
+    ]
+  ](if:$quicktime_difficulty is "Quicktime Difficulty: Easy")[
+    (if:$quicktime_params's "interrupts" > 1)[
+      (set:$quicktime_params's "interrupts" to 1)
+    ]
+  ]
+  (set:$game_type to "dont cum")
+  (if:(datanames:$quicktime_params) contains "skill check")[
+    (set:$skill_check to $quicktime_params's "skill check")
+    (if:(datanames:$quicktime_params) contains "skill check difficulty")[
+      (set:$skill_difficulty to $quicktime_params's "skill check difficulty")
+    ](else:)[
+      (set:$skill_difficulty to 50)
+    ]
+  ](else:)[
+    (set:$skill_check to "random")
+    (set:$skill_difficulty to 50)
+  ]
+
+  (set:$result to "clear previous")
+  (set:$rhythm_check to "true")
+  (set:$ai_direction to (either:"up","down"))
+  (set:$points to 50)
+  (set:$timer to $quicktime_params's "time")
+  <div class="game_header">
+    (if:$media is "picture")[
+      (print:"<img class='greyborder' src='img/" + $quicktime_params's "backdrop" + "' width=100% height=auto>")
+    ](else:)[
+      (print:"<video src='img/" + $quicktime_params's "backdrop" + "' autoplay='' loop='' muted='' playsinline/>")
+    ]
+    <div class="game_header_text">
+      <span class='shadow'>
+        (color:"#f9ced5")[
+          |timer>[
+            (css:"font-size:5vmin")[
+              (print:$quicktime_params's "objective")
+            ]
+          ]
+        ]
+      </span>
+      {[{}]<score_bar|[]<arrows|}
+      (replace:?right_options)[{
+        |enter>[(unless:$mobile_mode is "Real Time Minigames: Disabled")[(link:"Play minigame")[
+          (set:$minigame_played to "true")
+          (display:"quicktime right image")
+          (replace:?score_bar)[{
+            <div id="win-bar" width=50%>{
+              <div class='bar' style='background: repeating-linear-gradient(
+                45deg,
+                rgba(255, 255, 255, 0.9),
+                rgba(255, 255, 255, 0.9) 40px,
+                rgba(255, 255, 255, 1) 40px,
+                rgba(255, 255, 255, 1) 80px
+                );'></div>
+            }</div>
+            (after: time + 0.5s)[
+              ($dont_cum_update_points: 50)
+            ]
+            (stop:)
+          }]
+          (set:$result to "none")
+          (replace:?arrows)[{<span class='borderless'> (display:"dont cum begin message")</span>
+            [(link:"Begin")[
+              (set:$method to "minigame")
+              (display:"dont cum begin")
+            ]]<enter|
+          }]
+        ]]]
+        [(unless:$mobile_mode is "Real Time Minigames: Disabled")[(link:"Dildo")[
+          (set:$minigame_played to "true")
+          (display:"quicktime right image")
+          (replace:?score_bar)[{
+            <div id="win-bar" width=50%>{
+              <div class='bar' style='background: repeating-linear-gradient(
+                45deg,
+                rgba(255, 255, 255, 0.9),
+                rgba(255, 255, 255, 0.9) 40px,
+                rgba(255, 255, 255, 1) 40px,
+                rgba(255, 255, 255, 1) 80px
+                );'></div>
+            }</div>
+            (after: time + 0.5s)[
+              ($dont_cum_update_points: 50)
+            ]
+            (stop:)
+          }]
+          (set:$result to "none")
+          (replace:?arrows)[{<span class='borderless'> (display:"dildo facefuck begin message")</span>
+            [(link:"Begin")[
+              (set:$method to "minigame")
+              (display:"facefuck begin")
+            ]]<enter|
+          }]
+        ]]]
+        (display:"quicktime skill check")
+        (if:$minigame_skip is "Skippable Minigames: On")[
+          (link:"Skip (win)")[
+            (set:$dontcum to "finished")
+            (display:"quicktime right image")
+            (set:$next to $quicktime_params's "result passage")
+            (set:$result to "pass")
+            (display:"change screen")
+          ]
+          (link:"Skip (lose)")[
+            (set:$dontcum to "finished")
+            (display:"quicktime right image")
+            (set:$next to $quicktime_params's "result passage")
+            (set:$result to "fail")
+            (display:"change screen")
+          ]
+        ]
+      }]
+
+    </div>
+  </div>
+  <div class="options"></div>
+  <table cellpadding="0" cellspacing="0"><tr></tr></table>
+  <div class='options'>[]<score|</div>
+  (if:$quicktime_params contains "sex loop")[(set:$sex_loop to $quicktime_params's "sex loop")
+  (display:"play sex loop")]
+}
+
+
+:: dildo facefuck begin message {"position":"725,14100","size":"100,100"}
+{<div class='options'>[<span class='shadow'>**Stay on that dildo.**
+      </span>
+    ]<directions|[]<interrupt|
+  </div>
+}
+
+
+:: dildo facefuck begin {"position":"850,14225","size":"100,100"}
+(display:"dont cum timer")
+
+:: dildo facefuck update {"position":"225,14225","size":"100,100"}
+
+(if:$points > 99 or $points < 1)[
+  (set:$result to "fail")
+]
+
+<!-- MOD: CUM PUMP -->
+
+:: trigger cum pump
+(set:_bpio_spurts to (random:3,6))
+(if:$load is "big")[(set:_bpio_spurts to (random:8,12))]
+<script>
+const dev = Window.BP.devices["Generic Vibrator"];
+if (Array.isArray(dev.messageAttributes.RawWriteCmd)) {
+  // easier to fix here than on the server lol
+  dev.messageAttributes.RawWriteCmd = dev.messageAttributes.RawWriteCmd[0];
+}
+console.log("Spurting " + _bpio_spurts);
+dev.rawWrite("CumSpurt", _bpio_spurts, false);
+</script>
+
+:: sex cum in mouth {"position":"1225,1475","size":"100,100"}
+
+{
+(if:(datanames:$npc) contains "ballsize")[(if:$npc's "ballsize" > (random:4,10))[(set:$load to "big")]]
+(display:"trigger cum pump")
+(if:$load is "big")[
+(set:$text to (a:"big load"))
+
+(if:(a:"scarlit","cassidy") contains $character's "id")[
+
+(set:$img to (either:"/generic/sex/cum/mouth/big loads/closed lips 1","/generic/sex/cum/mouth/big loads/still mouth 2","/generic/sex/cum/mouth/big loads/still mouth 4","/generic/sex/cum/mouth/big loads/still mouth chin 1","/generic/sex/cum/mouth/big loads/tongue chin 1"))
+
+](else:)[
+
+(set:$img to (either:
+"/generic/sex/cum/mouth/big loads/closed lips 1",
+"/generic/sex/cum/mouth/big loads/grimace 1",
+"/generic/sex/cum/mouth/big loads/still mouth 1",
+"/generic/sex/cum/mouth/big loads/still mouth 2",
+"/generic/sex/cum/mouth/big loads/still mouth 3",
+"/generic/sex/cum/mouth/big loads/still mouth 4",
+"/generic/sex/cum/mouth/big loads/still mouth big 1",
+"/generic/sex/cum/mouth/big loads/still mouth chin 1",
+"/generic/sex/cum/mouth/big loads/still mouth chin 2",
+"/generic/sex/cum/mouth/big loads/still mouth chin 3",
+"/generic/sex/cum/mouth/big loads/still tongue 1",
+"/generic/sex/cum/mouth/big loads/tongue chin 1"))
+
+]
+
+(set:$text to $text + $img of (dm:
+	"/generic/sex/cum/mouth/big loads/closed lips 1",(a:"closed lips 1","clothes"),
+"/generic/sex/cum/mouth/big loads/grimace 1",(a:"grimace 1"),
+"/generic/sex/cum/mouth/big loads/still mouth 1",(a:"still mouth 1"),
+"/generic/sex/cum/mouth/big loads/still mouth 2",(a:"still mouth 2"),
+"/generic/sex/cum/mouth/big loads/still mouth 3",(a:"still mouth 3"),
+"/generic/sex/cum/mouth/big loads/still mouth 4",(a:"still mouth 4","clothes"),
+"/generic/sex/cum/mouth/big loads/still mouth big 1",(a:"still mouth big 1","cumdump"),
+"/generic/sex/cum/mouth/big loads/still mouth chin 1",(a:"still mouth chin 1","clothes"),
+"/generic/sex/cum/mouth/big loads/still mouth chin 2",(a:"still mouth chin 2","clothes"),
+"/generic/sex/cum/mouth/big loads/still mouth chin 3",(a:"still mouth chin 3"),
+"/generic/sex/cum/mouth/big loads/still tongue 1",(a:"still tongue 1","clothes"),
+"/generic/sex/cum/mouth/big loads/tongue chin 1",(a:"tongue chin 1","clothes","cumdump"),
+	))
+	
+(set:$rhythm to $img of (dm:
+	"/generic/sex/cum/mouth/big loads/closed lips 1",1463,
+"/generic/sex/cum/mouth/big loads/grimace 1",1224,
+"/generic/sex/cum/mouth/big loads/still mouth 1",1132,
+"/generic/sex/cum/mouth/big loads/still mouth 2",1132,
+"/generic/sex/cum/mouth/big loads/still mouth 3",1017,
+"/generic/sex/cum/mouth/big loads/still mouth 4",1154,
+"/generic/sex/cum/mouth/big loads/still mouth big 1",1154,
+"/generic/sex/cum/mouth/big loads/still mouth chin 1",1395,
+"/generic/sex/cum/mouth/big loads/still mouth chin 2",1017,
+"/generic/sex/cum/mouth/big loads/still mouth chin 3",1052,
+"/generic/sex/cum/mouth/big loads/still tongue 1",1176,
+"/generic/sex/cum/mouth/big loads/tongue chin 1",1176,
+	))
+	
+	(set:$backdrop to "scenes/" + $img + ".mp4")
+	
+(set:$sex_loop to "big load " + (text:(random:1,6)))(set:$se to "big load " + (text:(random:1,6)))	
+](else:)[
+
+
+(if:(random:1,2) is 1)[
+
+(if:$character's "id" is "alina")[
+
+(set:$img to "/characters/alina/cum/mouth " + (text:(random:1,5)))
+
+]
+(if:$character's "id" is "cassidy")[
+
+(set:$img to "/characters/cassidy/cum/" + (either:"mouth 1","mouth 2","mouth 3"))
+
+]
+(if:$character's "id" is "ella")[
+
+(set:$img to "/characters/ella/cum/" + (either:"mouth 1","mouth 2"))
+
+]
+(if:$character's "id" is "jade")[
+
+(set:$img to "/characters/jade/cum/" + (either:"mouth 1","mouth 2","mouth 3","mouth 4"))
+
+]
+(if:$character's "id" is "jia")[
+
+(set:$img to "/characters/jia/cum/" + (either:"mouth 1","mouth 2","mouth 3","mouth 4","mouth 5","mouth 6","mouth 7"))
+
+]
+(if:$character's "id" is "lana")[
+
+(set:$img to "/characters/lana/cum/" + (either:"mouth 1","mouth 2","mouth 3"))
+
+]
+(if:$character's "id" is "liya")[
+
+(set:$img to "/characters/liya/cum/" + (either:"mouth 1","mouth 2"))
+
+]
+(if:$character's "id" is "mia")[
+
+(set:$img to "/characters/mia/cum/mouth 1")
+
+]
+
+(if:$character's "id" is "rae")[
+
+(set:$img to "/characters/rae/cum/" + (either:"mouth 1","mouth 2","throat 1"))
+
+]
+(if:$character's "id" is "scarlit")[
+
+(set:$img to "/characters/scarlit/cum/" + (either:"mouth 1","mouth 2","mouth 3"))
+
+]
+
+
+
+](else:)[
+(if:(random:1,4) is 1)[
+(if:(a:"scarlit","cassidy","ella") contains $character's "id")[(set:$img to (either:"/generic/sex/cum/mouth/1 c","/generic/sex/cum/mouth/2 c","/generic/sex/cum/mouth/3 c"))](else-if:(a:"jade","rae") contains $character's "id")[(set:$img to (either:"/generic/sex/cum/mouth/1 c","/generic/sex/cum/mouth/1 w","/generic/sex/cum/mouth/2 w","/generic/sex/cum/mouth/direct 2"))](else:)[(set:$img to (either:"/generic/sex/cum/mouth/1 w","/generic/sex/cum/mouth/2 w"))]
+](else:)[
+(if:(a:"scarlit","cassidy") contains $character's "id")[(set:$img to (either:"/generic/sex/cum/mouth/mouth 2","/generic/sex/cum/mouth/mouth 3","/generic/sex/cum/mouth/mouth 8","/generic/sex/cum/mouth/mouth 18","/generic/sex/cum/mouth/mouth 19"))(if:(random:1,3) is 1 and $character's "masculinity" < 70)[(set:$img to (either:"/generic/sex/cum/mouth/finish 3","/generic/sex/cum/mouth/finish 4","/generic/sex/cum/mouth/jerk 3"))]](else:)[(set:$img to (either:"/generic/sex/cum/mouth/mouth 1","/generic/sex/cum/mouth/mouth 2","/generic/sex/cum/mouth/mouth 3","/generic/sex/cum/mouth/mouth 4","/generic/sex/cum/mouth/mouth 5","/generic/sex/cum/mouth/mouth 6","/generic/sex/cum/mouth/mouth 7","/generic/sex/cum/mouth/mouth 9","/generic/sex/cum/mouth/mouth 10","/generic/sex/cum/mouth/mouth 11","/generic/sex/cum/mouth/mouth 12","/generic/sex/cum/mouth/mouth 13","/generic/sex/cum/mouth/mouth 14","/generic/sex/cum/mouth/mouth 15","/generic/sex/cum/mouth/mouth 17","/generic/sex/cum/mouth/mouth 18","/generic/sex/cum/mouth/mouth 20","/generic/sex/cum/mouth/mouth 21","/generic/sex/cum/mouth/mouth 22","/generic/sex/cum/mouth/mouth 23","/generic/sex/cum/mouth/direct 1","/generic/sex/cum/mouth/direct 2"))(if:(random:1,3) is 1 and $character's "masculinity" < 80)[(set:$img to (either:"/generic/sex/cum/mouth/mouth 16","/generic/sex/cum/mouth/finish 1","/generic/sex/cum/mouth/finish 2","/generic/sex/cum/mouth/finish 3","/generic/sex/cum/mouth/finish 4","/generic/sex/cum/mouth/finish 5","/generic/sex/cum/mouth/finish 6","/generic/sex/cum/mouth/jerk 1","/generic/sex/cum/mouth/jerk 2","/generic/sex/cum/mouth/jerk 3","/generic/sex/cum/mouth/jerk 5","/generic/sex/cum/mouth/jerk 6","/generic/sex/cum/mouth/jerk 7","/generic/sex/cum/mouth/jerk 8","/generic/sex/cum/mouth/jerk 9","/generic/sex/cum/mouth/jerk 10"))]]]]
+
+(set:$text to $img of (dm:	
+	"/characters/alina/cum/mouth 1",(a:"jerk","kneeling","external","most misses","spit"),
+	"/characters/alina/cum/mouth 2",(a:"kneeling","external","direct","chin","eye","in mouth","clothes"),		
+	"/characters/alina/cum/mouth 3",(a:"lying","external","messy","in mouth"),
+	"/characters/alina/cum/mouth 4",(a:"kneeling","external","direct","feed","held","in mouth"),		
+	"/characters/alina/cum/mouth 5",(a:"kneeling","external","messy","in mouth","eye"),
+	"/characters/ella/cum/mouth 1",(a:"lying","jiggle tits","messy","external","in mouth"),
+	"/characters/ella/cum/mouth 2",(a:"kneeling","external","chin","in mouth","clothes"),	
+	"/characters/jade/cum/mouth 1",(a:"jerk","kneeling","external","direct","in mouth"),
+	"/characters/jade/cum/mouth 2",(a:"kneeling","external","chin","spit"),		
+	"/characters/jade/cum/mouth 3",(a:"kneeling","external","messy","in mouth"),
+	"/characters/jade/cum/mouth 4",(a:"kneeling","external","messy","in mouth","clothes"),
+	"/characters/jia/cum/mouth 1",(a:"lying","external","put in after","spit","direct","in mouth","clothes"),
+	"/characters/jia/cum/mouth 2",(a:"kneeling","external","direct","chin","in mouth"),		
+	"/characters/jia/cum/mouth 3",(a:"jerk","lying","external","chin","in mouth"),
+	"/characters/jia/cum/mouth 4",(a:"lying","direct","held","messy","chin","external","in mouth","clothes"),
+	"/characters/lana/cum/mouth 1",(a:"kneeling","external","chin","messy","in mouth","clothes"),
+	"/characters/lana/cum/mouth 2",(a:"kneeling","external","direct","chin","in mouth","clothes"),		
+	"/characters/lana/cum/mouth 3",(a:"kneeling","external","show tongue","in mouth"),
+	"/characters/liya/cum/mouth 1",(a:"kneeling","held","internal","in mouth"),
+	"/characters/liya/cum/mouth 2",(a:"kneeling","external","held","chin","messy","in mouth","clothes"),	
+	"/characters/scarlit/cum/mouth 1",(a:"external","kneeling","chin","in mouth","clothes"),
+	"/characters/scarlit/cum/mouth 2",(a:"internal","kneeling","in mouth"),
+	"/characters/scarlit/cum/mouth 3",(a:"internal","kneeling","chin","in mouth"),
+	"/characters/rae/cum/mouth 1",(a:"jerk","spit","kneeling","in mouth"),
+	"/characters/rae/cum/mouth 2",(a:"external","direct","kneeling","tongue","in mouth"),
+	"/characters/rae/cum/throat 1",(a:"balls deep","throatpie"),
+	"/characters/mia/cum/mouth 1",(a:"kneeling","internal","held","in mouth","messy","clothes","chin"),
+	"/characters/cassidy/cum/mouth 1",(a:"kneeling","external","in mouth"),
+	"/characters/cassidy/cum/mouth 2",(a:"kneeling","external","direct","in mouth","clothes"),		
+	"/characters/cassidy/cum/mouth 3",(a:"kneeling","external","in mouth"),
+	"/generic/sex/cum/mouth/1 c",(a:"external","spit","kneeling"),
+	"/generic/sex/cum/mouth/2 c",(a:"internal","spit","lying"),
+	"/generic/sex/cum/mouth/3 c",(a:"internal","in mouth","kneeling"),
+	"/generic/sex/cum/mouth/1 w",(a:"external","in mouth","kneeling","clothes"),
+	"/generic/sex/cum/mouth/2 w",(a:"external","in mouth","kneeling","lick after"),
+	"/generic/sex/cum/mouth/mouth 1",(a:"external","lying","in mouth","direct"),
+	"/generic/sex/cum/mouth/mouth 2",(a:"internal","kneeling","in mouth"),
+	"/generic/sex/cum/mouth/mouth 3",(a:"external","kneeling","in mouth","direct"),
+	"/generic/sex/cum/mouth/mouth 4",(a:"external","kneeling","in mouth","direct"),
+	"/generic/sex/cum/mouth/mouth 5",(a:"external","kneeling","in mouth","messy"),
+	"/generic/sex/cum/mouth/mouth 6",(a:"external","lying","in mouth","direct"),
+	"/generic/sex/cum/mouth/direct 1",(a:"external","kneeling","clothes","messy","in mouth","chin","direct"),
+	"/generic/sex/cum/mouth/direct 2",(a:"external","held","clothes","kneeling","messy","in mouth","direct"),
+	"/generic/sex/cum/mouth/mouth 7",(a:"external","smear","cockslap","messy","in mouth"),
+	"/generic/sex/cum/mouth/mouth 8",(a:"direct","messy","in mouth","kneeling","external"),
+	"/generic/sex/cum/mouth/mouth 9",(a:"messy","in mouth","feed","lying","external","direct"),
+	"/generic/sex/cum/mouth/mouth 10",(a:"internal","held","kneeling","pulsating","no mess","in mouth"),
+	"/generic/sex/cum/mouth/mouth 11",(a:"internal","held","kneeling","pulsating","chin","in mouth"),
+	"/generic/sex/cum/mouth/mouth 12",(a:"internal","held","kneeling","pulsating","chin","in mouth"),
+	"/generic/sex/cum/mouth/mouth 13",(a:"internal","kneeling","pulsating","chin","in mouth"),
+	"/generic/sex/cum/mouth/mouth 14",(a:"jerk","internal","kneeling","pulsating","chin","spit","in mouth"),
+	"/generic/sex/cum/mouth/mouth 15",(a:"internal","kneeling","pulsating","no mess","in mouth"),
+	"/generic/sex/cum/mouth/mouth 16",(a:"internal","kneeling","pulsating","no mess","in mouth"),
+	"/generic/sex/cum/mouth/mouth 17",(a:"internal","kneeling","pulsating","spit","in mouth"),
+	"/generic/sex/cum/mouth/mouth 18",(a:"external","no mess","kneeling","in mouth"),
+	"/generic/sex/cum/mouth/mouth 19",(a:"external","messy","kneeling","in mouth","chin"),
+	"/generic/sex/cum/mouth/mouth 20",(a:"external","messy","kneeling","in mouth","nose"),
+	"/generic/sex/cum/mouth/mouth 21",(a:"external","direct","kneeling","messy","in mouth"),
+	"/generic/sex/cum/mouth/mouth 22",(a:"external","direct","kneeling","messy","in mouth","chin"),
+	"/generic/sex/cum/mouth/mouth 23",(a:"external","direct","kneeling","no mess","in mouth","pulsating"),
+	"/generic/sex/cum/mouth/jerk 1",(a:"kneeling","external","jerk","in mouth","show tongue"),
+	"/generic/sex/cum/mouth/jerk 2",(a:"kneeling","external","jerk","in mouth","direct","no mess"),
+	"/generic/sex/cum/mouth/jerk 3",(a:"kneeling","external","jerk","in mouth","direct","no mess"),
+	"/generic/sex/cum/mouth/jerk 5",(a:"kneeling","external","jerk","in mouth","direct","no mess"),
+	"/generic/sex/cum/mouth/jerk 6",(a:"kneeling","external","jerk","in mouth","drip down cock"),
+	"/generic/sex/cum/mouth/jerk 7",(a:"kneeling","external","jerk","in mouth","direct","chin"),
+	"/generic/sex/cum/mouth/jerk 8",(a:"kneeling","external","jerk","in mouth","messy","nose","lips","clothes"),
+	"/generic/sex/cum/mouth/jerk 9",(a:"kneeling","external","jerk","in mouth","direct","chin"),
+	"/generic/sex/cum/mouth/jerk 10",(a:"kneeling","external","jerk","in mouth","direct","chin"),
+	"/generic/sex/cum/mouth/finish 1",(a:"internal","elegant","lick","no mess","in mouth","show tongue"),
+	"/generic/sex/cum/mouth/finish 2",(a:"internal","elegant","lick","no mess","in mouth","show tongue"),
+	"/generic/sex/cum/mouth/finish 3",(a:"internal","elegant","lick","drip down cock","in mouth","show tongue"),
+	"/generic/sex/cum/mouth/finish 4",(a:"internal","elegant","chin","in mouth"),
+	"/generic/sex/cum/mouth/finish 5",(a:"internal","elegant","spit","show tongue"),
+	"/generic/sex/cum/mouth/finish 6",(a:"internal","elegant","spit","show tongue","drip down cock"),
+	"/characters/jia/cum/mouth 5",(a:"external","held","messy","chin","lying"),
+	"/characters/jia/cum/mouth 6",(a:"internal","kneeling","held","pulsating","drip down cock","cough"),
+	"/characters/jia/cum/mouth 7",(a:"internal","held","pulsating","no mess","lying")
+
+	))]
+
+(set:$img to "<video src='img/scenes"+ $img + ".mp4' autoplay='' loop='' muted='' playsinline/>")
+(set:$cum_text to $text)
+(set:$load to "normal")
+}
+
+
+:: sex cum on face {"position":"225,1600","size":"100,100"}
+
+(display:"trigger cum pump")
+
+{(display:"change pov")
+(if:$pov is "1st")[(set:$img to "/generic/sex/cum/facial " + (text:(random:1,16)))](else:)[
+
+(if:$character's "id" is "rae")[
+
+(set:$img to "/characters/rae/cum/facial " + (text:(random:1,12)))
+(if:$load is "big")[(set:$img to "/characters/rae/cum/facial " + (text:(either:1,2,10,11)))]
+(if:$load is "unwilling")[(set:$img to "/characters/rae/cum/facial " + (text:(either:1,2,8)))]
+
+](else-if:$character's "id" is "cassidy")[
+
+
+(set:$img to "/characters/cassidy/cum/facial " + (text:(random:1,12)))
+
+(if:$load is "big")[(set:$img to "/characters/cassidy/cum/facial " + (text:(either:1,2,4,6,9,12)))]
+(if:$load is "unwilling")[(set:$img to "/characters/cassidy/cum/facial " + (text:(either:2,4,6,10,12)))]
+
+](else-if:$character's "id" is "alina")[
+
+
+(set:$img to "/characters/alina/cum/facial " + (text:(random:1,12)))
+
+(if:$load is "big")[(set:$img to "/characters/alina/cum/facial " + (text:(either:2,3,4,9,9,10,10)))]
+(if:$load is "unwilling")[(set:$img to "/characters/alina/cum/facial " + (text:(either:1,9)))]
+
+](else-if:$character's "id" is "lana")[
+
+
+(set:$img to "/characters/lana/cum/facial " + (text:(random:1,9)))
+(if:$load is "big")[(set:$img to "/characters/lana/cum/facial " + (text:(either:1,2,5,7,7,9)))]
+(if:$load is "unwilling")[(set:$img to "/characters/lana/cum/facial " + (text:(either:1,2,3,7)))]
+
+](else-if:$character's "id" is "ella")[
+
+(set:$img to "/characters/ella/cum/facial " + (text:(random:1,9)))
+(if:$load is "big")[(set:$img to "/characters/ella/cum/facial " + (text:(either:1,2,5,7)))]
+(if:$load is "unwilling")[(set:$img to "/characters/ella/cum/facial " + (text:(either:1,2,3,6,7,9)))]
+
+](else-if:$character's "id" is "jade")[
+
+(set:$img to "/characters/jade/cum/facial " + (text:(random:1,10)))
+(if:$load is "big")[(set:$img to "/characters/jade/cum/facial " + (text:(either:4,6,7,8,10)))]
+(if:$load is "unwilling")[(set:$img to "/characters/jade/cum/facial " + (text:(either:1,3,4,7,10)))]
+
+](else-if:$character's "id" is "jia")[
+
+(set:$img to "/characters/jia/cum/facial " + (text:(random:1,9)))
+(if:$load is "big")[(set:$img to "/characters/jia/cum/facial " + (text:(either:1,3,7,8,9)))]
+(if:$load is "unwilling")[(set:$img to "/characters/jia/cum/facial " + (text:(either:5,7)))]
+
+](else-if:$character's "id" is "scarlit")[
+
+(set:$img to "/characters/scarlit/cum/facial " + (text:(random:1,15)))
+(if:$load is "big")[(set:$img to "/characters/scarlit/cum/facial " + (text:(either:4,7,9,10,11,12,13,15)))]
+(if:$load is "unwilling")[(set:$img to "/characters/scarlit/cum/facial " + (text:(either:1,5,6,7,9,10,12)))]
+
+](else-if:$character's "id" is "mia")[
+
+(set:$img to "/characters/mia/cum/facial " + (text:(random:1,19)))
+(if:$load is "big")[(set:$img to "/characters/mia/cum/facial " + (text:(either:1,3,5,7,12,13,14,15,17,18)))]
+(if:$load is "unwilling")[(set:$img to "/characters/mia/cum/facial " + (text:(either:2,3,5,12)))]
+
+](else-if:$character's "id" is "liya")[
+
+(set:$img to "/characters/liya/cum/facial " + (text:(random:1,9)))
+(if:$load is "big")[(set:$img to "/characters/liya/cum/facial " + (text:(either:2,3,4,5,6,7,8,9)))]
+(if:$load is "unwilling")[(set:$img to "/characters/liya/cum/facial " + (text:(either:2,3,4,5,7,8,9)))]
+
+]]
+
+(set:$text to $img of (dm:
+
+"/generic/sex/cum/facial 1",(a:"spray","face",(either:"eyes","tongue"),"clothes"),
+"/generic/sex/cum/facial 2",(a:"spray","face",(either:"eyes","tongue")),
+"/generic/sex/cum/facial 3",(a:"ooze","face","tongue","tits"),
+"/generic/sex/cum/facial 4",(a:"spurt","face","eyes","cumdump"),
+"/generic/sex/cum/facial 5",(a:"ooze","face","eyes","tongue"),
+"/generic/sex/cum/facial 6",(a:"spray","face",(either:"eyes","tongue"),"clothes"),
+"/generic/sex/cum/facial 7",(a:"spurt","face","eyes","clothes"),
+"/generic/sex/cum/facial 8",(a:"spray","face",(either:"eyes","tongue"),"clothes"),
+"/generic/sex/cum/facial 9",(a:"spurt","face",(either:"eyes","tongue"),"clothes"),
+"/generic/sex/cum/facial 10",(a:"spurt","face",(either:"eyes","tongue")),
+"/generic/sex/cum/facial 11",(a:"spray","face",(either:"eyes","tongue"),"clothes"),
+"/generic/sex/cum/facial 12",(a:"ooze","face",(either:"eyes","tongue"),"clothes"),
+"/generic/sex/cum/facial 13",(a:"spurt","face",(either:"eyes","tongue"),"clothes"),
+"/generic/sex/cum/facial 14",(a:"ooze","face",(either:"eyes","tongue"),"clothes"),
+"/generic/sex/cum/facial 15",(a:"spurt","face",(either:"eyes","tongue"),"clothes"),
+"/generic/sex/cum/facial 16",(a:"spray","face",(either:"eyes","tongue"),"clothes"),
+"/characters/alina/cum/facial 1",(a:"ooze","chin","runny","upper lip","clothes"),
+"/characters/alina/cum/facial 2",(a:"spurt","open mouth","up nose","lying","hair"),
+"/characters/alina/cum/facial 3",(a:"ooze","held","tongue","open mouth"),
+"/characters/alina/cum/facial 4",(a:"spurt","eyes","forehead","hair","nose","chin","tongue","open mouth"),
+"/characters/alina/cum/facial 5",(a:"spatter","open mouth","nose","tongue","held","hair"),
+"/characters/alina/cum/facial 6",(a:"open mouth","tongue","spray"),
+"/characters/alina/cum/facial 7",(a:"spurt","open mouth","tongue","eyes"),
+"/characters/alina/cum/facial 8",(a:"spurt","open mouth","tongue","eyes","chin","hair"),
+"/characters/alina/cum/facial 9",(a:"held","forehead","nose","eyes","chin","cheek","face","cumdump"),
+"/characters/alina/cum/facial 10",(a:"spurt","open mouth","eyes","tongue","face","forehead","hair"),
+"/characters/alina/cum/facial 11",(a:"spurt","open mouth","tongue","eyes"),
+"/characters/alina/cum/facial 12",(a:"spurt","open mouth","tongue","eyes","hair","chin"),
+
+"/characters/cassidy/cum/facial 1",(a:"spurt","tongue","tits","open mouth","eyes","clothes"),
+"/characters/cassidy/cum/facial 2",(a:"ooze","cheek","upper lip","tongue","chin","open mouth"),
+"/characters/cassidy/cum/facial 3",(a:"clothes","spatter","spurt","tongue","open mouth"),
+"/characters/cassidy/cum/facial 4",(a:"spatter","nose","eyes","open mouth","hold","hair"),
+"/characters/cassidy/cum/facial 5",(a:"spray","chin","open mouth","clothes","hair"),
+"/characters/cassidy/cum/facial 6",(a:"hold","open mouth","ooze","nose"),
+"/characters/cassidy/cum/facial 7",(a:"ooze","nose","open mouth","tongue"),
+"/characters/cassidy/cum/facial 8",(a:"jerk","spurt","eyes","tongue","open mouth","hair"),
+"/characters/cassidy/cum/facial 9",(a:"open mouth","spurt","nose","tongue","open mouth","chin","clothes","flinch"),
+"/characters/cassidy/cum/facial 10",(a:"held","nose","tongue","open mouth","ooze"),
+"/characters/cassidy/cum/facial 11",(a:"open mouth","spurt","eyes","clothes","hair"),
+"/characters/cassidy/cum/facial 12",(a:"open mouth","spurt","eyes","clothes","hair","cumdump","ooze","hold"),	
+"/characters/ella/cum/facial 1",(a:"ooze","nose","eyes"),
+"/characters/ella/cum/facial 2",(a:"open mouth","nose","eyes","spurt"),
+"/characters/ella/cum/facial 3",(a:"clothes","open mouth","tongue","chin","spit","held","spurt"),
+"/characters/ella/cum/facial 4",(a:"spray","open mouth","tongue","nose","eyes","hair"),
+"/characters/ella/cum/facial 5",(a:"spurt","nose","open mouth","tongue","forehead","hair","up nose","clothes"),
+"/characters/ella/cum/facial 6",(a:"open mouth","tongue","spit","chin","spurt"),
+"/characters/ella/cum/facial 7",(a:"clothes","held","open mouth","eyes","tongue","nose","hair","forehead"),
+"/characters/ella/cum/facial 8",(a:"clothes","eyes","tongue","open mouth","jiggle tits","spatter"),
+"/characters/ella/cum/facial 9",(a:"clothes","spray","chin","open mouth"),
+	
+"/characters/jade/cum/facial 1",(a:"spurt","open mouth","flinch","nose","cheek","tits","tongue","gag","back of mouth","clothes"),
+"/characters/jade/cum/facial 2",(a:"open mouth","tongue","chin","neck","spatter","spurt","ooze","lips","hair"),
+"/characters/jade/cum/facial 3",(a:"nose","tongue","chin","spurt","open mouth"),
+"/characters/jade/cum/facial 4",(a:"spray","nose","spatter","tongue","open mouth","hair"),
+"/characters/jade/cum/facial 5",(a:"clothes","jiggle tits","eyes","open mouth","lips","tongue","cheek","ooze"),
+"/characters/jade/cum/facial 6",(a:"spurt","ropes","eyes","suck after","open mouth","nose","forehead","hair","tongue"),
+"/characters/jade/cum/facial 7",(a:"gag","back of mouth","hair","nose","eyes","spray","spurt","open mouth"),
+"/characters/jade/cum/facial 8",(a:"cumdump","forehead","eyes","open mouth","ooze","cheek","face","spurt","ropes","hair"),
+"/characters/jade/cum/facial 9",(a:"open mouth","tongue","chin","ooze","clothes"),
+"/characters/jade/cum/facial 10",(a:"chin","spurt","eyes","nose","cheek","cumdump","clothes"),
+	
+"/characters/jia/cum/facial 1",(a:"jerk","eyes","nose","tongue","spatter","spray","close eyes","open mouth","hair"),
+"/characters/jia/cum/facial 2",(a:"jerk","forehead","spurt","nose","tongue","hair"),
+"/characters/jia/cum/facial 3",(a:"spurt","forehead","hair"),
+"/characters/jia/cum/facial 4",(a:"open mouth","chin","ooze","spurt","tongue"),
+"/characters/jia/cum/facial 5",(a:"clothes","open mouth","held","tongue","spurt","hair"),
+"/characters/jia/cum/facial 6",(a:"nose","tongue","open mouth","ooze"),
+"/characters/jia/cum/facial 7",(a:"cumdump","eyes","forehead","face","nose","chin","hair"),
+"/characters/jia/cum/facial 8",(a:"cumdump","eyes","chin","hair","face","nose","chin","hair","clothes"),
+"/characters/jia/cum/facial 9",(a:"cumdump","eyes","chin","face","nose","chin","hair"),
+"/characters/lana/cum/facial 1",(a:"ooze","hold","face","nose","forehead"),
+"/characters/lana/cum/facial 2",(a:"clothes","spurt","open mouth","tongue","eyes"),	
+"/characters/lana/cum/facial 3",(a:"clothes","ooze","nose","chin","lips"),	
+"/characters/lana/cum/facial 4",(a:"clothes","chin","cheek","lips","ooze"),	
+"/characters/lana/cum/facial 5",(a:"spurt","hold","chin","hair","eyes","open mouth","tongue"),
+"/characters/lana/cum/facial 6",(a:"spray","open mouth","tongue","chin","eyes","clothes"),	
+"/characters/lana/cum/facial 7",(a:"spurt","face","cumdump","eyes","nose","forehead","hair"),	
+"/characters/lana/cum/facial 8",(a:"nose","held","lips","clothes","hair"),	
+"/characters/lana/cum/facial 9",(a:"spurt","open mouth","nose","cheek","cumdump","tongue","held","hair"),
+
+"/characters/liya/cum/facial 1",(a:"spurt","upper lip","tongue","open mouth"),
+"/characters/liya/cum/facial 2",(a:"held","spurt","eyes","close eyes","cheek","tongue","chin","clothes"),
+"/characters/liya/cum/facial 3",(a:"spurt","forehead","hair","eyes","nose","close eyes","tits","clothes"),
+"/characters/liya/cum/facial 4",(a:"ooze","tits","tongue","cheek","held","open mouth","clothes"),
+"/characters/liya/cum/facial 5",(a:"spurt","flinch","chin","forehead","nose","tongue","open mouth","clothes"),
+"/characters/liya/cum/facial 6",(a:"close eyes","spurt","tongue","spit","chin","tits","lips","clothes"),
+"/characters/liya/cum/facial 7",(a:"open mouth","spurt","back of mouth","chin","tits","eyes","forehead","clothes"),
+"/characters/liya/cum/facial 8",(a:"cumdump","spurt","hair","close eyes","lying","lips","flinch","ooze","cheek"),
+"/characters/liya/cum/facial 9",(a:"cumdump","forehead","spurt","close eyes","lips","flinch","ooze","cheek","hold","held","clothes"),
+"/characters/mia/cum/facial 1",(a:"spurt","tongue","face","chin","cheek","open mouth","clothes"),
+"/characters/mia/cum/facial 2",(a:"spurt","eyes","chin","lips","close eyes","clothes"),
+"/characters/mia/cum/facial 3",(a:"spurt","cumdump","forehead","nose","eyes","chin","lying","hair"),
+"/characters/mia/cum/facial 4",(a:"forehead","nose","tongue","open mouth","cheek","spurt"),
+"/characters/mia/cum/facial 5",(a:"eyes","spurt","nose","up nose","lips","tongue","ooze in mouth"),
+"/characters/mia/cum/facial 6",(a:"spurt","chin","strand","lips","tongue","open mouth"),
+"/characters/mia/cum/facial 7",(a:"close eyes","ooze","cumdump","thick","nose","eyes","forehead","cheek","chin","tits","clothes"),
+"/characters/mia/cum/facial 8",(a:"chin","ooze","ooze in mouth","clothes"),
+"/characters/mia/cum/facial 9",(a:"chin","open mouth","jiggle tits","clothes"),
+"/characters/mia/cum/facial 10",(a:"spray","long distance","chin","forehead","close eyes","eyes","clothes"),
+"/characters/mia/cum/facial 11",(a:"tits","lips","cheek","spurt","clothes"),
+"/characters/mia/cum/facial 12",(a:"spurt","cumdump","chin","mouth","eyes","tongue","nose","up nose","close eyes","clothes"),
+"/characters/mia/cum/facial 13",(a:"spurt","cumdump","chin","close eyes","tongue","nose","up nose"),
+"/characters/mia/cum/facial 14",(a:"spurt","cumdump","chin","mouth","close eyes","tongue","nose","up nose","close eyes","hair","tits","eyes"),
+"/characters/mia/cum/facial 15",(a:"spurt","cumdump","chin","forehead","mouth","close eyes","tongue","nose","up nose","close eyes","eyes","hair"),
+"/characters/mia/cum/facial 16",(a:"spurt","chin","forehead","mouth","close eyes","tongue","nose","up nose","close eyes","eyes","clothes","hair"),
+"/characters/mia/cum/facial 17",(a:"spurt","chin","forehead","mouth","close eyes","tongue","nose","up nose","close eyes","eyes","clothes","hair","cumdump"),
+"/characters/mia/cum/facial 18",(a:"spurt","chin","forehead","mouth","close eyes","tongue","nose","up nose","close eyes","eyes","clothes"),
+"/characters/mia/cum/facial 19",(a:"spurt","chin","mouth","tongue","nose"),
+"/characters/rae/cum/facial 1",(a:"spatter","face","eyes","open mouth","close eyes","clothes"),
+"/characters/rae/cum/facial 2",(a:"close eyes","spurt","face","hair","close","close eyes","open mouth","cumdump"),
+"/characters/rae/cum/facial 3",(a:"spurt","jerk","eyes","close eyes","flinch"),
+"/characters/rae/cum/facial 4",(a:"spurt","jerk","tongue","open mouth","suck after","hair"),
+"/characters/rae/cum/facial 5",(a:"spurt","open mouth","tongue","open eyes","chin","clothes"),
+"/characters/rae/cum/facial 6",(a:"spurt","open mouth","close eyes","tongue","chin","eyes","clothes","hair"),
+"/characters/rae/cum/facial 7",(a:"spurt","eyes","hair","tongue","open mouth","clothes"),
+"/characters/rae/cum/facial 8",(a:"spatter","held","tongue","open mouth","close eyes"),
+"/characters/rae/cum/facial 9",(a:"spurt","nose","chin","tongue"),
+"/characters/rae/cum/facial 10",(a:"spurt","forehead","hair","upper lip","tongue","up nose"),
+"/characters/rae/cum/facial 11",(a:"cumdump","up nose","eyes","forehead","nose","chin","clothes"),
+"/characters/rae/cum/facial 12",(a:"nose","chin","clothes","cheek","tongue","spurt","open mouth"),
+"/characters/scarlit/cum/facial 1",(a:"spurt","tongue","face","open mouth","chin","hair","clothes"),
+"/characters/scarlit/cum/facial 2",(a:"ooze","tongue","chin","neck","tits","open mouth","clothes"),
+"/characters/scarlit/cum/facial 3",(a:"spurt","open mouth","chin","tits","hair","clothes"),
+"/characters/scarlit/cum/facial 4",(a:"spray","open mouth","tongue","eyes","upper lip","chin","runny"),
+"/characters/scarlit/cum/facial 5",(a:"forehead","spurt","tongue","chin","open mouth","flinch","upper lip","clothes","hair"),
+"/characters/scarlit/cum/facial 6",(a:"held","chin","spurt","eyes","clothes"),
+"/characters/scarlit/cum/facial 7",(a:"spurt","eyes","nose","upper lip","forehead","clothes","hair"),
+"/characters/scarlit/cum/facial 8",(a:"spurt","nose","open mouth","tongue"),
+"/characters/scarlit/cum/facial 9",(a:"cumdump","spurt","upper lip","eyes","hair","cheeks","nose","clothes"),
+"/characters/scarlit/cum/facial 10",(a:"cumdump","spurt","upper lip","eyes","hair","cheeks","nose","open mouth","tongue","clothes"),
+"/characters/scarlit/cum/facial 11",(a:"cumdump","spurt","forehead","nose","eyes","up nose","open mouth","hair"),
+"/characters/scarlit/cum/facial 12",(a:"cumdump","spurt","runny","nose","forehead","hair","open mouth","held","cheek","nose","clothes"),
+"/characters/scarlit/cum/facial 13",(a:"ooze","cheek","ooze mouth"),
+"/characters/scarlit/cum/facial 14",(a:"cumdump","spurt","hair","eyes","forehead","tongue","cheek"),
+"/characters/scarlit/cum/facial 15",(a:"spurty","forehead","mouth","tongue","open mouth","nose","clothes")
+
+	))
+
+
+(set:$img to "<video src='img/scenes"+ $img + ".mp4' autoplay='' loop='' muted='' playsinline/>")
+(set:$cum_text to $text)
+}
